@@ -1,0 +1,33 @@
+submissiondate=10/23/2012
+submissiontime=01:49:21 PM
+contactname=
+contactemail=
+hotelname=Hyatt Pier 66
+hotelphonenumber=407-629-0900
+hotelcity=Winter Springs
+hotelstate=FL
+
+websiteURL=http://www.delmayandpartners.com/admin
+websitename=Delmay
+websiteusername=todd
+websitepassword=identity
+websiteotherid=Year Round Hotels 2012##45##Hyatt Pier 66##10
+
+start=11/15/2012
+end=11/15/2012
+
+room1=Tower Deluxe##349
+net1=
+sell1=
+currency1=
+breakfast1=
+language1=
+min1=
+cut1=
+atype1=
+alot1=10
+avail1=Y
+cta1=
+packagerate1=
+difftype1=$
+diffamount1=0

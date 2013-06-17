@@ -1,0 +1,342 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+
+<title>DelmayAndPartners.com Administration</title>
+<script language="javascript" type="text/javascript" src="../specific/js/logout.js"></script>
+ 
+
+<script language="javascript" type="text/javascript" src="http://www.delmayandpartners.com/admin/js/global.js"></script>
+<script language="javascript" type="text/javascript" src="http://www.delmayandpartners.com/admin/js/prototype.js"></script>
+<script language="javascript" type="text/javascript" src="http://www.delmayandpartners.com/admin/js/scriptaculous.js?load=effects"></script>
+<script language="javascript" type="text/javascript" src="http://www.delmayandpartners.com/admin/js/lightbox.js"></script>
+<script language="javascript" type="text/javascript" src="http://www.delmayandpartners.com/admin/js/wforms.js"></script>
+
+
+
+<link href="http://www.delmayandpartners.com/admin/styles/main.css" rel="stylesheet" type="text/css" />
+<style type="text/css" media="screen, tv, projection"> @import "http://www.delmayandpartners.com/admin/styles/menu.css"; </style>
+
+<link href="http://www.delmayandpartners.com/admin/styles/wforms.css" rel="stylesheet" type="text/css" />
+<link href="../specific/styles/main.css" rel="stylesheet" type="text/css" />
+<link href="/styles/wforms.css" rel="stylesheet" type="text/css" />
+<link href="../specific/styles/wforms.css" rel="stylesheet" type="text/css" />
+<!--[if lte IE 6]>
+<style type="text/css" media="screen, tv, projection">
+	@import "http://www.delmayandpartners.com/admin/styles/ie.css";
+	body { behavior:url("http://www.delmayandpartners.com/admin/js/ADxMenu.htc"); }
+</style>
+<![endif]-->
+
+<!--[if lte IE 6]>
+<style type="text/css">
+	@import "http://www.delmayandpartners.com/admin/styles/menu-ie.css";
+	body { behavior:url("http://www.delmayandpartners.com/admin/js/ADxMenu.htc"); }
+</style>
+<![endif]-->
+<style>
+#list_name_block{
+   display:none;
+}   
+
+#list_name_create{
+   display:none;
+}
+
+#progressAlert{
+	position: fixed;
+	width: 160px;
+	background-color:#000;
+	font-weight:bold;
+	color:#fff;                 
+	right:2px;
+	top:2px;
+	z-index: 100;
+	display:none;
+	padding:2px;
+}
+
+html, body{
+	margin: 0;                       
+}
+</style>
+<!--[if lte IE 6]>
+<style type="text/css">
+html, body
+ {
+ height: 100%;
+ overflow-x:hidden;
+ }
+ #progressAlert {
+ position: absolute;
+ display:none;
+}
+</style>
+<![endif]-->
+<link href="http://www.delmayandpartners.com/admin/styles/default.css" rel="stylesheet" media="screen,projection" type="text/css" />
+<link href="http://www.delmayandpartners.com/admin/styles/lightbox.css" rel="stylesheet" media="screen,projection" type="text/css" />
+<!--<link href="http://www.delmayandpartners.com/admin/styles/wforms.css" rel="stylesheet" media="screen,projection" type="text/css" />-->
+<link href="http://www.delmayandpartners.com/admin/styles/wforms-jsonly.css" rel="stylesheet" media="screen,projection" type="text/css" />
+<script language="javascript" type="text/javascript">
+
+function changeResStatus(what, form, who){
+   myE2 = document.getElementById('progressAlert');
+   myE2.style.display = 'block';
+   xajax.$('progressAlert').innerHTML="<img src=\"http://www.delmayandpartners.com/admin/images/ajax-loader.gif\"> Updating....please wait";
+   xajax_changeResStatus(xajax.getFormValues(form));
+}   
+
+function changeCompStatus(what, form, who){
+   myE2 = document.getElementById('progressAlert');
+   myE2.style.display = 'block';
+   xajax.$('progressAlert').innerHTML="<img src=\"http://www.delmayandpartners.com/admin/images/ajax-loader.gif\"> Updating....please wait";
+   xajax_changeCompStatus(xajax.getFormValues(form));
+}
+
+function changeActiveStatus(what, form, who){
+   myE2 = document.getElementById('progressAlert');
+   myE2.style.display = 'block';
+   xajax.$('progressAlert').innerHTML="<img src=\"http://www.delmayandpartners.com/admin/images/ajax-loader.gif\"> Updating....please wait";
+   xajax_changeActiveStatus(xajax.getFormValues(form));
+}  
+function deleteMe(who){
+   var answer = confirm ("Are you sure you want to delete this item?")
+   if (answer){
+     window.location = "/specific/deleteitem.php?id="+who;
+   }
+}  
+</script>
+</head>
+
+<body id="explosive">
+<div id="progressAlert"></div>
+<div id="header">
+		<div id="menu">
+		<ul id="menuList" class="adxm">
+		<li><a href="http://www.delmayandpartners.com/admin/accounts">Home</a> </li>
+				<li><a href="http://www.delmayandpartners.com/admin/adminusers/manageusers.php">Admin Users</a> 
+		   <ul>
+   <li><a href="http://www.delmayandpartners.com/admin/adminusers/addusers.php">Add Users </a></li>
+   <li><a href="http://www.delmayandpartners.com/admin/adminusers/manageusers.php">Manage Users</a></li>
+   <li><a href="http://www.delmayandpartners.com/admin/adminusers/managepartners.php">Manage Partners</a></li>   
+   </ul>
+		</li>
+								<li><a href="http://www.delmayandpartners.com/admin/events/manageevents.php">Events</a> 
+		   <ul>
+<li><a href="http://www.delmayandpartners.com/admin/events/addevent.php">Add Events</a></li>
+<li><a href="http://www.delmayandpartners.com/admin/events/manageevents.php">Manage Events</a></li>
+<li><a href="http://www.delmayandpartners.com/admin/events/pastevents.php">Manage Past Events</a></li>
+<li><a href="http://www.delmayandpartners.com/admin/events/events_archived.php">Archived Events</a></li>
+<li><a href="http://www.delmayandpartners.com/admin/events/eventreport.php"> Event Reports </a></li>
+<li><a href="http://www.delmayandpartners.com/admin/events/referral_report.php"> Referral Reports </a></li>
+<li><a href="http://www.delmayandpartners.com/admin/events/statistics.php"> Statistics </a></li>
+</ul>		</li>
+        <li>
+        <a href="http://www.delmayandpartners.com/admin/events/managehotels.php">Hotels</a> 
+		   <ul>
+	  <li><a href="http://www.delmayandpartners.com/admin/events/addhotels.php">Add Hotels</a></li>
+      <li><a href="http://www.delmayandpartners.com/admin/events/managehotels.php">Manage Hotels</a></li>
+      <li><a href="http://www.delmayandpartners.com/admin/events/message-hotels.php">Message Hotels</a></li>
+      <li><a href="http://www.delmayandpartners.com/admin/reports/managereports2.php">Invoice Hotel</a></li>
+      <li><a href="http://www.delmayandpartners.com/admin/reports/managereports.php">Hotel Reports</a></li>
+</ul>        </li>
+        <li>
+        <a href="http://www.delmayandpartners.com/admin/reservations/managecontacts.php">Clients</a> 
+		   <ul>
+
+<li><a href="http://www.delmayandpartners.com/admin/reservations/createclient.php">Add Clients</a></li>
+<li><a href="http://www.delmayandpartners.com/admin/reservations/managecontacts.php">Manage Clients</a></li>
+<li><a href="http://www.delmayandpartners.com/admin/events/manageprospects.php">Manage Prospects</a></li>
+<li><a href="http://www.delmayandpartners.com/admin/reservations/message-clients.php">Message Clients</a></li>
+<li><a href="http://www.delmayandpartners.com/admin/events/client_invoice.php"> Invoice Client </a></li>
+<li><a href="http://www.delmayandpartners.com/admin/events/inhouse_charge.php"> In-House Charges </a></li>
+<li><a href="http://www.delmayandpartners.com/admin/events/client_report.php">Client Reports</a></li>
+<li><a href="http://www.delmayandpartners.com/admin/reservations/createproposal1.php">Create Proposal</a></li>
+<li><a href="http://www.delmayandpartners.com/admin/reservations/subscribers.php">Email Subscribers</a></li>
+</ul>        </li>
+		<li><a href="http://www.delmayandpartners.com/admin/reservations/managereservations.php">Reservations</a> 
+		   <ul>
+<li><a href="http://www.delmayandpartners.com/admin/reservations/createreservation.php">Add Reservation</a></li>
+<li><a href="http://www.delmayandpartners.com/admin/reservations/managereservations.php">Manage Reservations</a></li>
+
+<li><a href="http://www.delmayandpartners.com/admin/reservations/changeslist.php">Changes/Notes List</a></li>
+<li><a href="http://www.delmayandpartners.com/admin/reservations/reconciliation_home.php">C/O Reconciliation</a></li>
+<li><a href="http://www.delmayandpartners.com/admin/reservations/resell_form.php">Re-Sell Waitlist</a></li>
+<li><a href="http://www.delmayandpartners.com/admin/reservations/cancellationlist.php">Cancelled List</a></li>
+<li><a href="http://www.delmayandpartners.com/admin/reservations/broken_entries.php">Broken Entries</a></li>
+</ul>
+		</li>
+				<li><a href="http://www.delmayandpartners.com/admin/transportation/rates.php">Transportation</a> 
+		   <ul>
+
+<li><a href="http://www.delmayandpartners.com/admin/transportation/add.php">Add Transportation </a></li>
+<li><a href="http://www.delmayandpartners.com/admin/transportation/managetransportation.php">Manage Transportation </a></li>
+<li><a href="http://www.delmayandpartners.com/admin/transportation/add_tcompany.php">Add Transport Co.</a></li>
+<li><a href="http://www.delmayandpartners.com/admin/transportation/mange_tcompany.php">Manage Transport Co.</a></li>
+<li><a href="http://www.delmayandpartners.com/admin/transportation/add_type.php">Add Trans. Rates</a></li>
+<li><a href="http://www.delmayandpartners.com/admin/transportation/rates.php">Manage Trans. Rates</a></li>
+</ul>		</li>
+				<li><a href="http://www.delmayandpartners.com/admin/content/modifycontent.php?id=contact_us">Content</a> 
+		   <ul>
+<li><a href="http://www.delmayandpartners.com/admin/content/modifycontent.php?id=contact_us">Edit Contact Us</a></li>
+<li><a href="http://www.delmayandpartners.com/admin/content/modifycontent.php?id=our_brands">Edit Our Brands</a></li>
+
+   <li><a href="http://www.delmayandpartners.com/admin/content/signature_edit">Edit Email Signature</a></li>
+   <li><a href="http://www.delmayandpartners.com/admin/content/edit_pdf_s.php">Edit Proposal Signature</a></li>
+   <li><a href="http://www.delmayandpartners.com/admin/content/fineprint_edit">Edit Email Fine Print</a></li>
+   <li><a href="http://www.delmayandpartners.com/admin/content/proposal_edit">Edit Proposal Text</a></li>
+   <li><a href="http://www.delmayandpartners.com/admin/content/w9.php">Edit W9 Form</a></li>
+   <li><a href="http://www.delmayandpartners.com/admin/content/addteamimages.php">System Images</a></li>
+</ul>		</li>
+						<li><a href="http://www.delmayandpartners.com/admin/set/logout.php" onclick="return askConfirm('logout','');">Logout</a></li>
+		</ul>
+		</div><!-- menu -->
+</div>
+<div id="content">
+              
+	<div id="main-content">
+	  <div class="pad">
+
+
+		    <div id="left_side_bar">
+	          <dl>
+	            <dt>
+				   <ul id="nav">
+<li><a href="http://www.delmayandpartners.com/admin/events/addevent.php">Add Events</a></li>
+<li><a href="http://www.delmayandpartners.com/admin/events/manageevents.php">Manage Events</a></li>
+<li><a href="http://www.delmayandpartners.com/admin/events/pastevents.php">Manage Past Events</a></li>
+<li><a href="http://www.delmayandpartners.com/admin/events/events_archived.php">Archived Events</a></li>
+<li><a href="http://www.delmayandpartners.com/admin/events/eventreport.php"> Event Reports </a></li>
+<li><a href="http://www.delmayandpartners.com/admin/events/referral_report.php"> Referral Reports </a></li>
+<li><a href="http://www.delmayandpartners.com/admin/events/statistics.php"> Statistics </a></li>
+</ul>			    </dt>
+              </dl>
+        </div>
+		
+		<div id="checkProperty" style="display:none;">
+				  <div class="inner">
+					  <img src="../specific/images/indicator.gif" alt="loading" /> Please Wait... We are validating your input.
+				  </div>
+	    </div>
+          <fieldset>
+          <legend>Events</legend>
+          <p><strong>Event Information may be modified by clicking the EVENT NAME.&nbsp; To Add or Manage the Event Hotels (including  Room Categories, Inventory and Pricing) click on MANAGE next to the Event Name.  Click on CONTRACTS to view the Contracts, Commission Percentages and Contracted  Figures (Dates, Room Nights and Revenue). </strong> </p>
+      <br />
+                            <div id="itsthetable">
+			                    <table width="99%" summary="Contacts">
+                      <caption>
+                          Manage Events
+                      </caption>
+                      <thead>
+                          <tr>
+                              <th scope="col">Event</th>
+                              <th scope="col">Code</th>
+							  <th scope="col">Dates</th>
+							  <th scope="col">Hotels</th>
+							  <th scope="col">Contracts</th>
+                          </tr>
+                      </thead>
+                      <tfoot>
+                          <tr>
+                              <th scope="row">Total</th>
+                              <td colspan="7">7 Events </td>
+                          </tr>
+                      </tfoot>
+                      <tbody>
+                          				   <tr>
+				      <th scope="row" colspan="5" style="text-align:center; background:#e2e7ea;">
+					  Meeting Planning					  </th>
+				   </tr>
+				                          <tr class="odd">
+                              <td><a href="http://www.delmayandpartners.com/admin/events/viewevent.php?event=69">UR1 Production Staff 2012</a></td>
+                    <td>UR1prostaff2012</td>  
+                              <td>December 08-10, 2012</td>     
+    <td>
+							  							  <a href="http://www.delmayandpartners.com/admin/events/assignhotels.php?event=69" title="Manage Hotels">Manage</a>							  </td>
+							  <td><a href="addcontracts.php?repevent=69" >Contracts</a></td>
+						  </tr>
+                                                    <tr >
+                              <td><a href="http://www.delmayandpartners.com/admin/events/viewevent.php?event=71">UR1 Artists 2012</a></td>
+                    <td>UR1Art2012</td>  
+                              <td>December 08-10, 2012</td>     
+    <td>
+							  							  <a href="http://www.delmayandpartners.com/admin/events/assignhotels.php?event=71" title="Manage Hotels">Manage</a>							  </td>
+							  <td><a href="addcontracts.php?repevent=71" >Contracts</a></td>
+						  </tr>
+                                                    <tr class="odd">
+                              <td><a href="http://www.delmayandpartners.com/admin/events/viewevent.php?event=66">Aschheim & Katz Wedding</a></td>
+                    <td>Aschheim</td>  
+                              <td>December 28-31, 2012</td>     
+    <td>
+							  							  <a href="http://www.delmayandpartners.com/admin/events/assignhotels.php?event=66" title="Manage Hotels">Manage</a>							  </td>
+							  <td><a href="addcontracts.php?repevent=66" >Contracts</a></td>
+						  </tr>
+                                                    <tr >
+                              <td><a href="http://www.delmayandpartners.com/admin/events/viewevent.php?event=74">Ultra Music Festival- Staff- 2013</a></td>
+                    <td>UMFST13</td>  
+                              <td>March 04-31, 2013</td>     
+    <td>
+							  							  <a href="http://www.delmayandpartners.com/admin/events/assignhotels.php?event=74" title="Manage Hotels">Add Hotels </a> / <a href="http://www.delmayandpartners.com/admin/events/delete_event.php?event=74" title="Delete Event"> Delete Event </a> 							  </td>
+							  <td><a href="addcontracts.php?repevent=74" >Contracts</a></td>
+						  </tr>
+                                                    <tr class="odd">
+                              <td><a href="http://www.delmayandpartners.com/admin/events/viewevent.php?event=73">Ultra Music Festival- Production- 2013</a></td>
+                    <td>UMFPRO13</td>  
+                              <td>March 06-30, 2013</td>     
+    <td>
+							  							  <a href="http://www.delmayandpartners.com/admin/events/assignhotels.php?event=73" title="Manage Hotels">Manage</a>							  </td>
+							  <td><a href="addcontracts.php?repevent=73" >Contracts</a></td>
+						  </tr>
+                          				   <tr>
+				      <th scope="row" colspan="5" style="text-align:center; background:#e2e7ea;">
+					  Year Round Reservation					  </th>
+				   </tr>
+				                          <tr >
+                              <td><a href="http://www.delmayandpartners.com/admin/events/viewevent.php?event=45">Year Round Hotels 2012</a></td>
+                    <td>YR12</td>  
+                              <td>November 20 2011-December 10, 2013</td>     
+    <td>
+							  							  <a href="http://www.delmayandpartners.com/admin/events/assignhotels.php?event=45" title="Manage Hotels">Manage</a>							  </td>
+							  <td><a href="addcontracts.php?repevent=45" >Contracts</a></td>
+						  </tr>
+                                                    <tr class="odd">
+                              <td><a href="http://www.delmayandpartners.com/admin/events/viewevent.php?event=64">LGBT Visitor's Center</a></td>
+                    <td>LGBT</td>  
+                              <td>September 01-December 31, 2012</td>     
+    <td>
+							  							  <a href="http://www.delmayandpartners.com/admin/events/assignhotels.php?event=64" title="Manage Hotels">Manage</a>							  </td>
+							  <td><a href="addcontracts.php?repevent=64" >Contracts</a></td>
+						  </tr>
+                                                </tbody>
+                  </table>
+                  <table width="99%" border="0" cellspacing="0" cellpadding="0">
+                      <tr>
+                          <td align="right">showing 1 to 7 of 7 total |
+                                                            first
+                                                                                          |
+                                                            previous
+                                                                                          |
+                                                            next
+                          							  |
+                                                                                          last
+                                                            </td>
+                      </tr>
+                  </table>
+              </div>
+		      
+			
+    <!--  MANUAL FORM -->
+    </fieldset>
+		  <dl id="alert_ok" style="display:none">
+
+	     </dl>
+	  </div>
+	</div>
+</div>
+<div id="footer">
+	<p>&copy; <a href="http://www.DelmayAndPartners.com" target="_blank">Delmay Corporation</a>, <script language="javascript" type="text/javascript" src="http://www.delmayandpartners.com/js/year.js"></script></p></div>
+
+</body>
+</html>
+

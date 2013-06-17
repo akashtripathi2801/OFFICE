@@ -1,0 +1,39 @@
+perl -d delmay.pl delmayFlatfile.txt
+ locate greatBooking.pl
+ locate happyHoliday.pl
+
+
+http://www.delmayandpartners.com/admin/home
+http://www.delmayandpartners.com/admin/home
+
+xajax	checkUser
+xajaxr	1351573834809
+xajaxargs[]	<xjxquery><q>PostBackAction=SignIn&ReturnUrl=&username=todd&password=identity&loginButton=Login</q></xjxquery>
+ 
+xajax=checkUser&xajaxr=1351573834809&xajaxargs[]=%3Cxjxquery%3E%3Cq%3EPostBackAction%3DSignIn%26ReturnUrl%3D%26username%3Dtodd%26password%3Didentity%26loginButton%3DLogin%3C%2Fq%3E%3C%2Fxjxquery%3E
+
+xajax=checkUser&xajaxargs[]=%3Cxjxquery%3E%3Cq%3E&loginButton=Login&ReturnUrl=&password=identity&PostBackAction=SignIn&username=todd%3C%2Fq%3E%3C%2Fxjxquery%3E&xajaxr=1351575979000
+
+
+
+
+'xajax=checkUser&xajaxargs%5B%5D=<xjxquery><q>&loginButton=Login&ReturnUrl=&password=identity&PostBackAction=SignIn&username=todd<%2Fq><%2Fxjxquery>&xajaxr=1351572968
+
+
+
+PostBackAction=SignIn&ReturnUrl=&username=todd&password=identity&loginButton=Login
+&loginButton=Login&ReturnUrl=&password=identity&PostBackAction=SignIn&remember=&username=todd
+
+
+
+xjxquery%3E%3Cq%3EPostBackAction%3DSignIn%26ReturnUrl%3D%26username%3Dtodd%26password%3Didentity%26loginButton%3DLogin%3C%2Fq%3E%3C%2Fxjxquery%3E
+
+%3Cxjxquery%3E%3Cq%3E&loginButton=Login&ReturnUrl=&password=identity&PostBackAction=SignIn&username=todd%3C%2Fq%3E%3C%2Fxjxquery%3E
+=================================================..
+yyyy-mm-dd
+url for updating alot http://www.delmayandpartners.com/admin/events/addroombydate.php?event=45&date=2012-11-02&room=349
+
+http://www.delmayandpartners.com/admin/events/addroombydate.php?event=45&date=2012-11-15&room=349
+
+http://www.delmayandpartners.com/admin/events/addroombydate.php?event=45&date=2012-11-15&room=348
+perl -d delmayCompanion.pl '141972|Delmay|Year Round Hotels 2012##45##Hyatt Pier 66##10|todd|identity|http://www.delmayandpartners.com/admin|usd|2012-04-16|2012-04-16||yyyy-mm-dd|{1001##TRIPLA##Tower Deluxe##348},{2002##DOUBLE##Tower Executive##349}|175hghusssy|Dollars|0'

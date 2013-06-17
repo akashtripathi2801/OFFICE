@@ -1,0 +1,636 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+
+<title>DelmayAndPartners.com Administration</title>
+<script language="javascript" type="text/javascript" src="js/logout.js"></script>
+	  <script language="javascript" type="text/javascript" src="http://www.delmayandpartners.com/admin/reservations/js/global.js"></script>
+<script language="javascript" type="text/javascript" src="http://www.delmayandpartners.com/admin/reservations/js/lightbox.js"></script>
+<script language="javascript" type="text/javascript" src="http://www.delmayandpartners.com/admin/reservations/js/wforms.js"></script>
+<script language="javascript" type="text/javascript" src="http://www.delmayandpartners.com/admin/reservations/js/ajax.js"></script>
+<script src="http://www.delmayandpartners.com/admin/js/prototype.js" type="text/javascript"></script>
+<script language="javascript" type="text/javascript" src="http://www.delmayandpartners.com/admin/tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
+<script src="http://www.delmayandpartners.com/admin/js/scriptaculous.js" type="text/javascript"></script>
+<script src="http://www.delmayandpartners.com/admin/js/inplaceselect.js" type="text/javascript"></script>
+<script language="javascript" type="text/javascript" src="http://www.delmayandpartners.com/admin/events/js/bsn.AutoSuggest_2.1.3.js" charset="utf-8"></script>
+<link rel="stylesheet" href="http://www.delmayandpartners.com/admin/events/css/autosuggest_inquisitor.css" type="text/css" media="screen" charset="utf-8" />
+
+<script language="javascript" type="text/javascript">
+	tinyMCE.init({
+		theme : "advanced",
+		mode : "exact",
+		elements : "extra_info",
+		save_callback : "customSave",
+		content_css : "example_advanced.css",
+		extended_valid_elements : "a[href|target|name]",
+		plugins : "table",
+		theme_advanced_buttons3_add_before : "tablecontrols,separator",
+		//invalid_elements : "a",
+		theme_advanced_styles : "Header 1=header1;Header 2=header2;Header 3=header3;Table Row=tableRow1", // Theme specific setting CSS classes
+		//execcommand_callback : "myCustomExecCommandHandler",
+		debug : false
+	});
+	function customSave(id, content) {
+		//alert(id + "=" + content);
+	}
+
+/*
+ * InPlaceEditor extension that adds a 'click to edit' text when the field is 
+ * empty.
+ */
+Ajax.InPlaceEditor.prototype.__initialize = Ajax.InPlaceEditor.prototype.initialize;
+Ajax.InPlaceEditor.prototype.__getText = Ajax.InPlaceEditor.prototype.getText;
+Ajax.InPlaceEditor.prototype.__onComplete = Ajax.InPlaceEditor.prototype.onComplete;
+Ajax.InPlaceEditor.prototype = Object.extend(Ajax.InPlaceEditor.prototype, {
+
+    initialize: function(element, url, options){
+        this.__initialize(element,url,options)
+        this.setOptions(options);
+        this._checkEmpty();
+    },
+
+    setOptions: function(options){
+        this.options = Object.extend(Object.extend(this.options,{
+            emptyText: 'Click here to add a value',
+            emptyClassName: 'inplaceeditor-empty'
+        }),options||{});
+    },
+
+    _checkEmpty: function(){
+        if( this.element.innerHTML.length == 0 ){
+            this.element.appendChild(
+                Builder.node('span',{className:this.options.emptyClassName},this.options.emptyText));
+        }
+    },
+
+    getText: function(){
+        document.getElementsByClassName(this.options.emptyClassName,this.element).each(function(child){
+            this.element.removeChild(child);
+        }.bind(this));
+        return this.__getText();
+    },
+
+    onComplete: function(transport){
+        this._checkEmpty();
+        this.__onComplete(transport);
+    }
+});
+
+function setupCategoryEditor(el, url) {
+    var editor=new Ajax.InPlaceEditor(el, url);
+    Object.extend(editor, {
+        createEditField: function() {
+            var text=this.getText();
+
+            var field=document.createElement("select");
+            field.name="value";
+
+            this.editField=field;
+            this.form.appendChild(this.editField);
+
+            new Ajax.Request('/url/to/option/list', {
+                onSuccess: function(req) {
+                    // Get the text from an XML tag.
+                    var getData=function(el, which) {
+                        stuff=el.getElementsByTagName(which);
+                        return stuff[0].firstChild.nodeValue;
+                    };
+                    var cats=req.responseXML.getElementsByTagName("cat");
+                    $A(cats).each( function(cat, idx) {
+                        var op=document.createElement("option");
+                        op.value=getData(cat, "value");
+                        op.text=getData(cat, "key");
+                        if(window.ActiveXObject) {
+                            field.options.add(op);
+                        } else {
+                            field.appendChild(op);
+                        }
+
+                        // Select the current item
+                        if(op.text == text) {
+                            field.selectedIndex=idx;
+                        }
+                    });
+                }
+                });
+        }
+    });
+}
+
+function formatfield(who){
+   switch(who){
+
+	   case "workphone1":
+	       fieldme = "workphone_inplaceeditor";
+		   re = /\D/g; // remove any characters that are not numbers
+		   socnum=document[fieldme].editvalue.value
+		   socnum = socnum.replace(re,"")
+		   sslen=socnum.length
+		   if(sslen>3&&sslen<6){
+			  ssa=socnum.slice(0,3)
+			  ssb=socnum.slice(3,6)
+			  document[fieldme].editvalue.value=ssa+"-"+ssb
+		   }else{
+			  if(sslen>3){
+				 ssa=socnum.slice(0,3)
+				 ssb=socnum.slice(3,6)
+				 ssc=socnum.slice(6,10)
+				 document[fieldme].editvalue.value=ssa+"-"+ssb+"-"+ssc
+			  }else{
+				 document[fieldme].editvalue.value=socnum
+			  }
+		   }
+	   break 
+	   
+	   case "phone1":
+	       fieldme = "phone_inplaceeditor";
+		   re = /\D/g; // remove any characters that are not numbers
+		   socnum=document[fieldme].editvalue.value
+		   socnum = socnum.replace(re,"")
+		   sslen=socnum.length
+		   if(sslen>3&&sslen<6){
+			  ssa=socnum.slice(0,3)
+			  ssb=socnum.slice(3,6)
+			  document[fieldme].editvalue.value=ssa+"-"+ssb
+		   }else{
+			  if(sslen>3){
+				 ssa=socnum.slice(0,3)
+				 ssb=socnum.slice(3,6)
+				 ssc=socnum.slice(6,10)
+				 document[fieldme].editvalue.value=ssa+"-"+ssb+"-"+ssc
+			  }else{
+				 document[fieldme].editvalue.value=socnum
+			  }
+		   }
+	   break 
+	   
+	   case "fax1":
+	       fieldme = "fax_inplaceeditor";
+		   re = /\D/g; // remove any characters that are not numbers
+		   socnum=document[fieldme].editvalue.value
+		   socnum = socnum.replace(re,"")
+		   sslen=socnum.length
+		   if(sslen>3&&sslen<6){
+			  ssa=socnum.slice(0,3)
+			  ssb=socnum.slice(3,6)
+			  document[fieldme].editvalue.value=ssa+"-"+ssb
+		   }else{
+			  if(sslen>3){
+				 ssa=socnum.slice(0,3)
+				 ssb=socnum.slice(3,6)
+				 ssc=socnum.slice(6,10)
+				 document[fieldme].editvalue.value=ssa+"-"+ssb+"-"+ssc
+			  }else{
+				 document[fieldme].editvalue.value=socnum
+			  }
+		   }
+	   break 
+   }	
+}
+function showpasschange(){
+   var el = document.getElementById('passchange');
+   el.style.display = (el.style.display != 'none' ? 'none' : '' );
+   /*if (status == "off") {
+		el.style.display = 'none';
+	}else {
+		el.style.display = 'block';
+	}*/
+	
+   var el = document.getElementById('passcaption');
+   el.style.display = (el.style.display != 'none' ? 'none' : '' );
+   /*if (status == "off") {
+		el.style.display = 'none';
+	}else {
+		el.style.display = 'block';
+	}*/
+}
+</script>
+<script language="javascript" type="text/javascript" src="http://www.delmayandpartners.com/admincalendar.js"></script>
+
+<link href="http://www.delmayandpartners.com/admin/styles/main.css" rel="stylesheet" type="text/css" />
+<link href="http://www.delmayandpartners.com/admin/specific/styles/main.css" rel="stylesheet" type="text/css" />
+<link href="http://www.delmayandpartners.com/admin/styles/wforms.css" rel="stylesheet" type="text/css" />
+<link href="http://www.delmayandpartners.com/admin/calendar.css" rel="stylesheet" type="text/css" />
+<link href="http://www.delmayandpartners.com/admin/specific/styles/wforms.css" rel="stylesheet" type="text/css" />
+<!--[if lte IE 6]>
+<style type="text/css" media="screen, tv, projection">
+	@import "http://www.delmayandpartners.com/admin/styles/ie.css";
+	body { behavior:url("http://www.delmayandpartners.com/admin/js/ADxMenu.htc"); }
+</style>
+<![endif]-->
+
+<style type="text/css" media="screen, tv, projection"> @import "http://www.delmayandpartners.com/admin/styles/menu.css"; </style>
+<!--[if lte IE 6]>
+<style type="text/css">
+	@import "http://www.delmayandpartners.com/admin/styles/menu-ie.css";
+	body { behavior:url("http://www.delmayandpartners.com/admin/js/ADxMenu.htc"); }
+</style>
+<![endif]-->
+<style>
+#list_name_block{
+   display:none;
+}   
+
+#list_name_create{
+   display:none;
+}
+
+#progressAlert{
+	position: fixed;
+	width: 160px;
+	background-color:#000;
+	font-weight:bold;
+	color:#fff;                 
+	right:2px;
+	top:2px;
+	z-index: 100;
+	display:none;
+	padding:2px;
+}
+
+html, body{
+	margin: 0;                       
+}
+style media="all" type="text/css">
+
+h3{
+   margin:5px 0 5px 0;
+}   
+form.inplaceeditorform { /* The form */
+   width:350px;
+   float:left;
+   margin:0;
+   padding:0;
+}
+
+form.inplaceeditorform input[type="text"] { /* Input box */
+}
+
+form.inplaceeditorform textarea { /* Textarea, if multiple columns */
+}
+
+form.inplaceeditorform input[type="submit"] { /* The submit button */
+  margin-left:1em;
+}
+form.inplaceeditor-saving { background: url(/images/ajax-loader.gif) bottom right no-repeat; }
+
+form.inplaceeditorform a { /* The province link */ 
+  margin-left:1em;
+}
+.fieldme{
+   margin:10px;
+   padding:10px;
+}   
+.labelme{
+   width:170px;
+   float:left;
+   display:inline;
+   font-weight:bold;
+}   
+.editable{
+   /*width:350px;*/
+   float:left;
+   cursor:pointer;
+}   
+</style>
+<!--[if lte IE 6]>
+<style type="text/css">
+html, body
+ {
+ height: 100%;
+ overflow-x:hidden;
+ }
+ #progressAlert {
+ position: absolute;
+ display:none;
+}
+</style>
+<![endif]-->
+<link href="http://www.delmayandpartners.com/admin/styles/default.css" rel="stylesheet" media="screen,projection" type="text/css" />
+<link href="http://www.delmayandpartners.com/admin/styles/lightbox.css" rel="stylesheet" media="screen,projection" type="text/css" />
+<!--<link href="http://www.delmayandpartners.com/admin/styles/wforms.css" rel="stylesheet" media="screen,projection" type="text/css" />-->
+<link href="http://www.delmayandpartners.com/admin/styles/wforms-jsonly.css" rel="stylesheet" media="screen,projection" type="text/css" />
+
+</head>
+
+<body id="explosive">
+<div id="header">
+		<div id="menu">
+		<ul id="menuList" class="adxm">
+		<li><a href="http://www.delmayandpartners.com/admin/accounts">Home</a> </li>
+				<li><a href="http://www.delmayandpartners.com/admin/adminusers/manageusers.php">Admin Users</a> 
+		   <ul>
+   <li><a href="http://www.delmayandpartners.com/admin/adminusers/addusers.php">Add Users </a></li>
+   <li><a href="http://www.delmayandpartners.com/admin/adminusers/manageusers.php">Manage Users</a></li>
+   <li><a href="http://www.delmayandpartners.com/admin/adminusers/managepartners.php">Manage Partners</a></li>   
+   </ul>
+		</li>
+								<li><a href="http://www.delmayandpartners.com/admin/events/manageevents.php">Events</a> 
+		   <ul>
+<li><a href="http://www.delmayandpartners.com/admin/events/addevent.php">Add Events</a></li>
+<li><a href="http://www.delmayandpartners.com/admin/events/manageevents.php">Manage Events</a></li>
+<li><a href="http://www.delmayandpartners.com/admin/events/pastevents.php">Manage Past Events</a></li>
+<li><a href="http://www.delmayandpartners.com/admin/events/events_archived.php">Archived Events</a></li>
+<li><a href="http://www.delmayandpartners.com/admin/events/eventreport.php"> Event Reports </a></li>
+<li><a href="http://www.delmayandpartners.com/admin/events/referral_report.php"> Referral Reports </a></li>
+<li><a href="http://www.delmayandpartners.com/admin/events/statistics.php"> Statistics </a></li>
+</ul>		</li>
+        <li>
+        <a href="http://www.delmayandpartners.com/admin/events/managehotels.php">Hotels</a> 
+		   <ul>
+	  <li><a href="http://www.delmayandpartners.com/admin/events/addhotels.php">Add Hotels</a></li>
+      <li><a href="http://www.delmayandpartners.com/admin/events/managehotels.php">Manage Hotels</a></li>
+      <li><a href="http://www.delmayandpartners.com/admin/events/message-hotels.php">Message Hotels</a></li>
+      <li><a href="http://www.delmayandpartners.com/admin/reports/managereports2.php">Invoice Hotel</a></li>
+      <li><a href="http://www.delmayandpartners.com/admin/reports/managereports.php">Hotel Reports</a></li>
+</ul>        </li>
+        <li>
+        <a href="http://www.delmayandpartners.com/admin/reservations/managecontacts.php">Clients</a> 
+		   <ul>
+
+<li><a href="http://www.delmayandpartners.com/admin/reservations/createclient.php">Add Clients</a></li>
+<li><a href="http://www.delmayandpartners.com/admin/reservations/managecontacts.php">Manage Clients</a></li>
+<li><a href="http://www.delmayandpartners.com/admin/events/manageprospects.php">Manage Prospects</a></li>
+<li><a href="http://www.delmayandpartners.com/admin/reservations/message-clients.php">Message Clients</a></li>
+<li><a href="http://www.delmayandpartners.com/admin/events/client_invoice.php"> Invoice Client </a></li>
+<li><a href="http://www.delmayandpartners.com/admin/events/inhouse_charge.php"> In-House Charges </a></li>
+<li><a href="http://www.delmayandpartners.com/admin/events/client_report.php">Client Reports</a></li>
+<li><a href="http://www.delmayandpartners.com/admin/reservations/createproposal1.php">Create Proposal</a></li>
+<li><a href="http://www.delmayandpartners.com/admin/reservations/subscribers.php">Email Subscribers</a></li>
+</ul>        </li>
+		<li><a href="http://www.delmayandpartners.com/admin/reservations/managereservations.php">Reservations</a> 
+		   <ul>
+<li><a href="http://www.delmayandpartners.com/admin/reservations/createreservation.php">Add Reservation</a></li>
+<li><a href="http://www.delmayandpartners.com/admin/reservations/managereservations.php">Manage Reservations</a></li>
+
+<li><a href="http://www.delmayandpartners.com/admin/reservations/changeslist.php">Changes/Notes List</a></li>
+<li><a href="http://www.delmayandpartners.com/admin/reservations/reconciliation_home.php">C/O Reconciliation</a></li>
+<li><a href="http://www.delmayandpartners.com/admin/reservations/resell_form.php">Re-Sell Waitlist</a></li>
+<li><a href="http://www.delmayandpartners.com/admin/reservations/cancellationlist.php">Cancelled List</a></li>
+<li><a href="http://www.delmayandpartners.com/admin/reservations/broken_entries.php">Broken Entries</a></li>
+</ul>
+		</li>
+				<li><a href="http://www.delmayandpartners.com/admin/transportation/rates.php">Transportation</a> 
+		   <ul>
+
+<li><a href="http://www.delmayandpartners.com/admin/transportation/add.php">Add Transportation </a></li>
+<li><a href="http://www.delmayandpartners.com/admin/transportation/managetransportation.php">Manage Transportation </a></li>
+<li><a href="http://www.delmayandpartners.com/admin/transportation/add_tcompany.php">Add Transport Co.</a></li>
+<li><a href="http://www.delmayandpartners.com/admin/transportation/mange_tcompany.php">Manage Transport Co.</a></li>
+<li><a href="http://www.delmayandpartners.com/admin/transportation/add_type.php">Add Trans. Rates</a></li>
+<li><a href="http://www.delmayandpartners.com/admin/transportation/rates.php">Manage Trans. Rates</a></li>
+</ul>		</li>
+				<li><a href="http://www.delmayandpartners.com/admin/content/modifycontent.php?id=contact_us">Content</a> 
+		   <ul>
+<li><a href="http://www.delmayandpartners.com/admin/content/modifycontent.php?id=contact_us">Edit Contact Us</a></li>
+<li><a href="http://www.delmayandpartners.com/admin/content/modifycontent.php?id=our_brands">Edit Our Brands</a></li>
+
+   <li><a href="http://www.delmayandpartners.com/admin/content/signature_edit">Edit Email Signature</a></li>
+   <li><a href="http://www.delmayandpartners.com/admin/content/edit_pdf_s.php">Edit Proposal Signature</a></li>
+   <li><a href="http://www.delmayandpartners.com/admin/content/fineprint_edit">Edit Email Fine Print</a></li>
+   <li><a href="http://www.delmayandpartners.com/admin/content/proposal_edit">Edit Proposal Text</a></li>
+   <li><a href="http://www.delmayandpartners.com/admin/content/w9.php">Edit W9 Form</a></li>
+   <li><a href="http://www.delmayandpartners.com/admin/content/addteamimages.php">System Images</a></li>
+</ul>		</li>
+						<li><a href="http://www.delmayandpartners.com/admin/set/logout.php" onclick="return askConfirm('logout','');">Logout</a></li>
+		</ul>
+		</div><!-- menu -->
+</div>
+
+<div id="content">
+
+	<div id="main-content">
+	  <div class="pad">
+
+
+		    <div id="left_side_bar">
+	          <dl>
+	            <dt>This side will display help and notes for each section</dt>
+              </dl>
+          </div>
+		  
+
+		    <h2>Welcome</h2>
+		    <p>This Administration site allows you to manage the content on your Website.		    </p>
+            <br clear="all"/>
+                        <div id="itsthetable" style="margin-right:45px;">
+              <br /><br />
+			                
+                  
+              <table width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+              <th scope="cols" colspan="10" style="text-align:center;"><input type="button" name="shownoteform" id="shownoteform" onclick="document.getElementById('noteformtr').style.display=''" value="Add Note" /> Tasks <input type="button" name="showtaskform" id="showtaskform" onclick="document.getElementById('taskformtr').style.display=''" value="Add task" /></th></tr>
+              <tr id="noteformtr" style="display:none;">
+              <td colspan="10">
+              <form name="simplenoteform" id="simplenoteform" method="post" action="addsimplenote.php" style="width:800px" >
+              <div style="width:100px; float:left">Client Name:</div>
+              
+							<input name="clientname2" type="text"  id="clientname2" size="40"  value=""/>
+							<input name="client_id" type="hidden"  id="client_id" size="40"  value=""/><br/>
+                            
+			  <div style="width:100px; float:left">Event:</div>
+                             <input type="text" name="eventname" id="eventname2" value="" style="width:353px" />
+                             <input type="hidden" name="event_id2" id="event_id2" value="" />
+                            <br/>
+
+
+             <div style="width:100px; float:left"> Note: </div><textarea id="note_msg" name="note_msg" cols="50" rows="2"></textarea> <br/>
+              <div style="width:100px; float:left">&nbsp;</div><input type="submit" name="note_submit" id="note_submit" value="Submit" />
+<input type="button" name="hidenoteform" id="hidenoteform" onclick="document.getElementById('noteformtr').style.display='none'" value="Cancel" />
+              </form>
+              </td>
+              </tr>
+              <tr id="taskformtr" style="display:none;">
+              <td colspan="10">
+              <form name="simpletaskform" id="simpletaskform" method="post" enctype="multipart/form-data" action="addsimpletask.php" style="width:800px" >
+             <div style="width:100px; float:left"> Client Name: </div>
+							<input name="clientname" type="text"  id="clientname" size="40"  value=""/>
+							<input name="clientid" type="hidden"  id="clientid" size="40"  value=""/><br/>
+            <div style="width:100px; float:left"> Reservation Id: </div>
+                             <input type="text" name="taskres" id="taskres" value="" size="40" />
+                            <br/>
+            <div style="width:100px; float:left"> Event: </div>
+                             <input type="text" name="eventname" id="eventname" value="" style="width:353px" />
+                             <input type="hidden" name="event_id" id="event_id" value="" />
+                            <br/>
+
+             <div style="width:100px; float:left"> Assign To:</div><select id="task_admin" name="task_admin">
+                            <option value="jadelmay">jadelmay</option>
+                            <option value="jeff">jeff</option>
+                            <option value="kera">kera</option>
+                            <option value="matt">matt</option>
+                            <option value="miggy">miggy</option>
+                            <option value="todd">todd</option>
+                            </select><br/>
+                  <div style="width:100px;  float:left; ">Proposal #</div>             
+                 
+                  <input name="task_proposal" id="task_proposal" value="" style="width:50px;" /> Use digits only.
+                 <br/>
+                  <div style="width:100px; float:left;"  >Attachment</div>
+                  
+                  <input name="task_attach" id="task_attach" type="file" value="" />
+                 <br/>
+              <div style="width:100px; float:left">Task: </div> <textarea id="task_msg" name="task_msg" cols="50" rows="2"></textarea> <br/>
+              <div style="width:100px; float:left">&nbsp;</div>
+              <input type="submit" name="task_submit" id="task_submit" value="Submit" />
+<input type="button" name="hidetaskform" id="hidetaskform" onclick="document.getElementById('taskformtr').style.display='none'" value="Cancel" />
+              </form>
+              </td>
+              </tr>
+              <tr>
+              <th scope="cols" colspan="10" style="text-align:center;">
+              <form method="post" action="reservations/print_tasks.php" target="_blank" style="width:50px; float:left; background:none; border:none;">
+              <input name="days" id="days" value="" type="hidden" />
+              <input type="submit" name="submit" value="Print All"/>
+              </form>
+              <form method="post" action="reservations/print_tasks.php" target="_blank" style="width:200px; float:left; background:none; border:none;">
+              <input type="submit" name="submit" value="Print Only"/>
+              <select name="admins" id="admins">
+                            <option value="jadelmay">jadelmay</option>
+                            <option value="jeff">jeff</option>
+                            <option value="kera">kera</option>
+                            <option value="matt">matt</option>
+                            <option value="miggy">miggy</option>
+                            <option value="todd">todd</option>
+                            </select>
+              <input name="days" id="days" value="" type="hidden" />
+              </form>
+              <div style="text-align:right; width:100%"><a href="http://www.delmayandpartners.com/admin/account.php?&orderby=owner">View By Owner</a></div>
+              </th>
+              
+             
+              <tr>
+              <th scope="cols" colspan="10" style="text-align:center;">
+              <a href="http://www.delmayandpartners.com/admin/account.php?task=0">Today</a> | <a href="http://www.delmayandpartners.com/admin/account.php?task=2">Tomorrow</a> | <a href="http://www.delmayandpartners.com/admin/account.php?task=7">7 days</a> | <a href="http://www.delmayandpartners.com/admin/account.php?task=30">30 days</a> | <a href="http://www.delmayandpartners.com/admin/account.php?task=50">50 days</a>
+              </th>
+              </tr>
+                                </table>    
+              
+              
+                  </div>
+            
+			<!--Time: <span id="clock" style="font-weight:bold">0</span>-->
+		    
+	  </div>
+	</div>
+</div>
+<style type="text/css">
+.popup {
+-moz-opacity:.70; filter:alpha(opacity=70); opacity:.70;}
+.popupno {
+          }
+</style>
+<div id="mrtom" class="popup" style="z-index:10; width:100%; height:100%;background-color:#000;position:fixed;left:0px;top:0px; display:none;">
+</div>
+<div id="mrtom2" class="popupno" style="z-index:20; position:fixed;background-color:#FFFFFF;left:50%;width:300px;height:100px;top:50%;margin:-100px 0 0 -150px; display:none;">
+<form style=" border:none;" action="http://www.delmayandpartners.com/admin/reservations/deletenotes.php" method="post">
+<input id="msgid" name="msgid" value="" type="hidden" />
+<p style="font-weight:bold;">
+If you have responded to this Note, do you want to delete it and send the hotel a message that it has been completed?
+</p>
+<p align="center">
+<input type="submit" name="submityes" value="Yes" /> &nbsp; &nbsp; <input type="submit" name="submitno" value="No" />
+</p>
+</form>
+</div>
+<div id="footer">
+	<p>&copy; <a href="http://www.DelmayAndPartners.com" target="_blank">Delmay Corporation</a>, <script language="javascript" type="text/javascript" src="http://www.delmayandpartners.com/js/year.js"></script></p></div>
+<script type="text/javascript" language="javascript">
+function respond_response(resid,emailid,conf,name)
+{
+  window.location='mailto:'+emailid+'?subject=Res ID: '+resid+' / '+conf+' / '+name;
+  window.close('gfj');
+  document.getElementById('msgid').value=resid;
+  document.getElementById('mrtom').style.display='';
+  document.getElementById('mrtom2').style.display='';
+	
+/*	var url="gethotels.php?";
+	url=url+"&event="+evt;
+	xmlHttp = GetXmlHttpObject(stateChangeHandler);
+	xmlHttp_Get(xmlHttp, url);*/
+
+    //window.location='reservations/deletenotes.php?id='+resid;
+}
+
+function notepopup(resid)
+{
+	alert('fgj bxb ');
+  var x;
+  x = confirm('If you have responded to this Note, do you want to delete it and send the hotel a message that it has been completed?');
+}
+</script>
+<script type="text/javascript">
+	var options = {
+		script:"http://www.delmayandpartners.com/admin/reservations/results.php?json=true&limit=20&",
+		varname:"input",
+		json:true,
+		shownoresults:false,
+		maxresults:20,
+		callback: function (obj) { document.getElementById('clientid').value = obj.id; }
+	};
+	var as_json = new bsn.AutoSuggest('clientname', options);
+	
+	
+	var options_xml = {
+		script: function (input) { return "http://www.delmayandpartners.com/admin/reservations/results.php?input="+input+"&clientid="+document.getElementById('clientid').value; },
+		varname:"input"
+	};
+	var as_xml = new bsn.AutoSuggest('testinput_xml', options_xml);
+
+
+	var options1 = {
+		script:"http://www.delmayandpartners.com/admin/events/event_results.php?json=true&limit=20&past=true&",
+		varname:"input",
+		json:true,
+		shownoresults:false,
+		maxresults:20,
+		callback: function (obj) { document.getElementById('event_id').value = obj.id;   }		
+	};
+	var as_json = new bsn.AutoSuggest('eventname', options1);
+	var options_xml = {
+		script: function (input) 
+		{ 
+		return "http://www.delmayandpartners.com/admin/events/event_results.php?input="+input+"&event_id="+document.getElementById('event').value; },varname:"input"	};
+		
+	var as_xml = new bsn.AutoSuggest('testinput_xml', options_xml);
+
+
+	var options2 = {
+		script:"http://www.delmayandpartners.com/admin/reservations/results.php?json=true&limit=20&",
+		varname:"input",
+		json:true,
+		shownoresults:false,
+		maxresults:20,
+		callback: function (obj) { document.getElementById('client_id').value = obj.id; }
+	};
+	var as_json = new bsn.AutoSuggest('clientname2', options2);
+	
+	
+	var options_xml = {
+		script: function (input) { return "http://www.delmayandpartners.com/admin/reservations/results.php?input="+input+"&clientid="+document.getElementById('client_id').value; },
+		varname:"input"
+	};
+	var as_xml = new bsn.AutoSuggest('testinput_xml', options_xml);
+
+
+	var options3 = {
+		script:"http://www.delmayandpartners.com/admin/events/event_results.php?json=true&limit=20&",
+		varname:"input",
+		json:true,
+		shownoresults:false,
+		maxresults:20,
+		callback: function (obj) { document.getElementById('event_id2').value = obj.id;   }		
+	};
+	var as_json = new bsn.AutoSuggest('eventname2', options3);
+	var options_xml = {
+		script: function (input) 
+		{ 
+		return "http://www.delmayandpartners.com/admin/events/event_results.php?input="+input+"&event_id2="+document.getElementById('event_id2').value; },varname:"input"	};
+		
+	var as_xml = new bsn.AutoSuggest('testinput_xml', options_xml);
+
+	
+</script>
+</body>
+</html>
